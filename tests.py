@@ -107,3 +107,40 @@ class CupcakeViewsTestCase(TestCase):
             })
 
             self.assertEqual(Cupcake.query.count(), 2)
+    
+    def test_patch_cupcake(self):
+        with app.test_client() as client:
+            url = f'/api/cupcakes/{self.cupcake.id}'
+            self.cupcake.rating += 1
+            resp = client.patch(url, json=self.cupcake.serialize())
+            print(self.cupcake)
+
+            self.assertEqual(resp.status_code, 200)
+            
+            data = resp.json
+            print(data)
+
+            self.assertEqual(data, {
+                'cupcake': {
+                    "id": self.cupcake.id,
+                    "flavor": "TestFlavor",
+                    "size": "TestSize",
+                    "rating": 6,
+                    "image": "http://test.com/cupcake.jpg"
+                }
+            })
+
+            
+    def test_delete_cupcake(self):
+        with app.test_client() as client:
+            url = f'/api/cupcakes/{self.cupcake.id}'
+            resp = client.delete(url, json=self.cupcake.serialize())
+            
+            self.assertEqual(resp.status_code, 200)
+
+            data = resp.json
+
+            self.assertEqual(data, {
+                'message': 'Deleted'
+            }
+            )
